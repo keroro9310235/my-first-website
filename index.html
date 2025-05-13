@@ -25,15 +25,52 @@
       margin-top: 20px;
       font-size: 18px;
     }
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #d94f4f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #b83c3c;
+    }
   </style>
 </head>
 <body>
-<audio autoplay loop hidden>
-  <source src="bg-music.mp3" type="audio/mpeg">
-  您的瀏覽器不支援音樂播放。
-</audio>
+
   <h1>阿蝶生日快樂 我愛你 ❤️</h1>
   <img src="photo.jpg" alt="合照">
   <p>最愛的寶貝。</p>
+
+  <!-- 音樂播放器 -->
+  <audio id="bgm" loop>
+    <source src="bg-music.mp3" type="audio/mpeg">
+    您的瀏覽器不支援音樂播放。
+  </audio>
+
+  <!-- 播放/暫停按鈕 -->
+  <button onclick="toggleMusic()">▶️ 播放音樂</button>
+
+  <script>
+    const audio = document.getElementById('bgm');
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        audio.pause();
+        event.target.innerText = "▶️ 播放音樂";
+      } else {
+        audio.play();
+        event.target.innerText = "⏸️ 暫停音樂";
+      }
+      isPlaying = !isPlaying;
+    }
+  </script>
+
 </body>
 </html>
