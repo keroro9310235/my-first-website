@@ -30,10 +30,12 @@
     }
 
     .slide img {
-      width: 100%;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
+  width: 400px;
+  height: 300px;
+  object-fit: cover;  /* 保持圖片比例並裁切，防止變形 */
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
 
     .prev, .next {
       cursor: pointer;
@@ -102,7 +104,7 @@
       width: 4px;
       height: 4px;
       background: red;
-      border-radius: 50%;
+      .slide img: 50%;
       top: 50%;
       left: 50%;
       animation: particle 1s ease-out infinite;
