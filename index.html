@@ -12,22 +12,54 @@
       padding: 50px;
       overflow: hidden;
     }
+
     h1 {
       font-size: 48px;
       color: #d94f4f;
       margin-bottom: 30px;
     }
-    img {
-      width: 300px;
+
+    .slideshow-container {
+      position: relative;
+      max-width: 400px;
+      margin: auto;
+    }
+
+    .slide {
+      display: none;
+    }
+
+    .slide img {
+      width: 100%;
       border-radius: 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      position: relative;
-      z-index: 1;
     }
+
+    .prev, .next {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      width: auto;
+      padding: 10px;
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+      background-color: rgba(0,0,0,0.5);
+      border-radius: 0 3px 3px 0;
+      user-select: none;
+      transform: translateY(-50%);
+    }
+
+    .next {
+      right: 0;
+      border-radius: 3px 0 0 3px;
+    }
+
     p {
       margin-top: 20px;
       font-size: 18px;
     }
+
     button {
       margin-top: 30px;
       padding: 12px 24px;
@@ -39,11 +71,11 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
+
     button:hover {
       background-color: #b83c3c;
     }
 
-    /* Firework container */
     .firework {
       position: absolute;
       top: 50%;
@@ -53,6 +85,7 @@
       border-radius: 50%;
       animation: explode 1s ease-out infinite;
     }
+
     .firework::before, .firework::after {
       content: '';
       position: absolute;
@@ -64,6 +97,7 @@
       left: 50%;
       animation: particle 1s ease-out infinite;
     }
+
     .firework::after {
       background: yellow;
       animation-delay: 0.5s;
@@ -71,15 +105,14 @@
 
     @keyframes explode {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(4); opacity: 0; }
+      100% { transform: scale(40); opacity: 0; }
     }
 
     @keyframes particle {
       0% { transform: translate(0, 0); opacity: 1; }
-      100% { transform: translate(calc(30px - 60px * random()), calc(30px - 60px * random())); opacity: 0; }
+      100% { transform: translate(30px, -30px); opacity: 0; }
     }
 
-    /* Position fireworks */
     .left-firework {
       left: 10%;
     }
@@ -92,10 +125,27 @@
 <body>
 
   <h1>阿蝶生日快樂 我愛你 ❤️</h1>
+
   <div class="firework left-firework"></div>
-  <img src="photo.jpg" alt="合照">
   <div class="firework right-firework"></div>
-  <p>最愛的寶貝。</p>
+
+  <div class="slideshow-container">
+    <div class="slide"><img src="photo1.jpg" alt="photo1"></div>
+    <div class="slide"><img src="photo2.jpg" alt="photo2"></div>
+    <div class="slide"><img src="photo3.jpg" alt="photo3"></div>
+    <div class="slide"><img src="photo4.jpg" alt="photo4"></div>
+    <div class="slide"><img src="photo5.jpg" alt="photo5"></div>
+    <div class="slide"><img src="photo6.jpg" alt="photo6"></div>
+    <div class="slide"><img src="photo7.jpg" alt="photo7"></div>
+    <div class="slide"><img src="photo8.jpg" alt="photo8"></div>
+    <div class="slide"><img src="photo9.jpg" alt="photo9"></div>
+    <div class="slide"><img src="photo10.jpg" alt="photo10"></div>
+
+    <a class="prev" onclick="plusSlides(-1)">❮</a>
+    <a class="next" onclick="plusSlides(1)">❯</a>
+  </div>
+
+  <p>我們的甜蜜回憶 ❤️</p>
 
   <!-- 音樂播放器 -->
   <audio id="bgm" loop>
@@ -103,13 +153,12 @@
     您的瀏覽器不支援音樂播放。
   </audio>
 
-  <!-- 播放/暫停按鈕 -->
   <button onclick="toggleMusic()">▶️ 播放音樂</button>
 
   <script>
+    // 播放/暫停按鈕
     const audio = document.getElementById('bgm');
     let isPlaying = false;
-
     function toggleMusic() {
       if (isPlaying) {
         audio.pause();
@@ -121,20 +170,31 @@
       isPlaying = !isPlaying;
     }
 
-    // 修正 CSS 無法亂數問題
-    const style = document.createElement('style');
-    let css = '';
-    for (let i = 0; i < 10; i++) {
-      const x = Math.random() * 60 - 30;
-      const y = Math.random() * 60 - 30;
-      css += `
-      .firework::before:nth-child(${i}) {
-        transform: translate(${x}px, ${y}px);
-      }
-      `;
+    // 照片輪播
+    let slideIndex = 0;
+    showSlides();
+
+    function plusSlides(n) {
+      slideIndex += n;
+      showSlides(slideIndex);
     }
-    style.innerHTML = css;
-    document.head.appendChild(style);
+
+    function showSlides(n) {
+      let slides = document.getElementsByClassName("slide");
+      if (n >= slides.length) { slideIndex = 0; }
+      if (n < 0) { slideIndex = slides.length - 1; }
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";
+      }
+      slides[slideIndex].style.display = "block";
+    }
+
+    function autoSlide() {
+      slideIndex++;
+      showSlides(slideIndex);
+    }
+
+    setInterval(autoSlide, 4000); // 每4秒自動換圖
   </script>
 
 </body>
