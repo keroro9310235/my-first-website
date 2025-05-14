@@ -9,9 +9,8 @@
       background-color: #fff8f0;
       color: #333;
       text-align: center;
-      padding-top: 50px;
-      margin: 0;
-      overflow-x: hidden;
+      padding: 50px;
+      overflow: hidden;
     }
 
     h1 {
@@ -22,9 +21,8 @@
 
     .slideshow-container {
       position: relative;
-      width: 300px;
-      height: 400px;
-      margin: 0 auto;
+      max-width: 400px;
+      margin: auto;
     }
 
     .slide {
@@ -32,116 +30,107 @@
     }
 
     .slide img {
-      width: 300px;
-      height: 400px;
-      object-fit: cover;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
+  width: 300px;
+  height: 400px;
+  object-fit: cover;  /* 保持圖片比例並裁切，防止變形 */
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
 
     .prev, .next {
       cursor: pointer;
       position: absolute;
       top: 50%;
+      width: auto;
       padding: 10px;
       color: white;
       font-weight: bold;
       font-size: 24px;
       background-color: rgba(0,0,0,0.5);
-      border-radius: 10px;
+      border-radius: 0 3px 3px 0;
       user-select: none;
       transform: translateY(-50%);
       z-index: 2;
-    }
+}
 
-    .prev {
-      left: -60px;
+.prev {
+  left: -60px; /* 往照片左邊外推 */
+}
+
+.next {
+  right: -60px; /* 往照片右邊外推 */
+}
     }
 
     .next {
-      right: -60px;
+      right: 0;
+      border-radius: 3px 0 0 3px;
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #d94f4f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #b83c3c;
     }
 
     .firework {
-      position: fixed;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, #ffcc00, transparent);
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      background: transparent;
       border-radius: 50%;
-      animation: explode 1s infinite;
-      z-index: 1;
-      pointer-events: none;
+      animation: explode 1s ease-out infinite;
+    }
+
+    .firework::before, .firework::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: red;
+      .slide img: 50%;
+      top: 50%;
+      left: 50%;
+      animation: particle 1s ease-out infinite;
+    }
+
+    .firework::after {
+      background: yellow;
+      animation-delay: 0.5s;
     }
 
     @keyframes explode {
-      0% {
-        transform: scale(0.5);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(10);
-        opacity: 0;
-      }
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(40); opacity: 0; }
     }
 
-    audio {
-      display: none;
+    @keyframes particle {
+      0% { transform: translate(0, 0); opacity: 1; }
+      100% { transform: translate(30px, -30px); opacity: 0; }
     }
 
-    #controls {
-      margin-top: 20px;
+    .left-firework {
+      left: 10%;
     }
 
-    #controls button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 5px;
-      border: none;
-      border-radius: 10px;
-      background-color: #ff8080;
-      color: white;
-      cursor: pointer;
-    }
-
-    #surpriseBtn {
-      margin-top: 30px;
-      padding: 10px 20px;
-      font-size: 20px;
-      background-color: #ff8080;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    .cake-person {
-      position: fixed;
-      bottom: 0;
-      left: -300px;
-      width: 200px;
-      z-index: 999;
-      opacity: 0;
-      transition: opacity 0.5s ease-in;
-    }
-
-    .animate-in {
-      animation: walkIn 5s ease-out forwards;
-    }
-
-    @keyframes walkIn {
-      0% {
-        left: -300px;
-        opacity: 0;
-      }
-      30% {
-        opacity: 1;
-      }
-      100% {
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 1;
-      }
+    .right-firework {
+      right: 10%;
     }
   </style>
 </head>
@@ -149,74 +138,76 @@
 
   <h1>阿蝶生日快樂 我愛你 ❤️</h1>
 
-  <!-- 幻燈片 -->
+  <div class="firework left-firework"></div>
+  <div class="firework right-firework"></div>
+
   <div class="slideshow-container">
-    <div class="slide"><img src="photo1.jpg"></div>
-    <div class="slide"><img src="photo2.jpg"></div>
-    <div class="slide"><img src="photo3.jpg"></div>
-    <div class="slide"><img src="photo4.jpg"></div>
-    <div class="slide"><img src="photo5.jpg"></div>
-    <div class="slide"><img src="photo6.jpg"></div>
-    <div class="slide"><img src="photo7.jpg"></div>
-    <div class="slide"><img src="photo8.jpg"></div>
-    <div class="slide"><img src="photo9.jpg"></div>
-    <div class="slide"><img src="photo10.jpg"></div>
+    <div class="slide"><img src="photo1.jpg" alt="photo1"></div>
+    <div class="slide"><img src="photo2.jpg" alt="photo2"></div>
+    <div class="slide"><img src="photo3.jpg" alt="photo3"></div>
+    <div class="slide"><img src="photo4.jpg" alt="photo4"></div>
+    <div class="slide"><img src="photo5.jpg" alt="photo5"></div>
+    <div class="slide"><img src="photo6.jpg" alt="photo6"></div>
+    <div class="slide"><img src="photo7.jpg" alt="photo7"></div>
+    <div class="slide"><img src="photo8.jpg" alt="photo8"></div>
+    <div class="slide"><img src="photo9.jpg" alt="photo9"></div>
+    <div class="slide"><img src="photo10.jpg" alt="photo10"></div>
 
     <a class="prev" onclick="plusSlides(-1)">❮</a>
     <a class="next" onclick="plusSlides(1)">❯</a>
   </div>
 
-  <!-- 撥放音樂控制 -->
-  <div id="controls">
-    <button onclick="document.getElementById('bgMusic').play()">▶ 播放音樂</button>
-    <button onclick="document.getElementById('bgMusic').pause()">⏸ 暫停音樂</button>
-  </div>
+  <p>我們的甜蜜回憶 ❤️</p>
 
-  <!-- 驚喜按鈕 -->
-  <button id="surpriseBtn">🎁 驚喜</button>
-
-  <!-- 卡通蛋糕人物 -->
-  <div id="cakePerson" class="cake-person">
-    <img src="person-with-cake.png" alt="端蛋糕的人" />
-  </div>
-
-  <!-- 背景音樂 -->
-  <audio id="bgMusic" autoplay loop>
+  <!-- 音樂播放器 -->
+  <audio id="bgm" loop>
     <source src="bg-music.mp3" type="audio/mpeg">
     您的瀏覽器不支援音樂播放。
   </audio>
 
-  <!-- 左右煙火 -->
-  <div class="firework" style="top: 100px; left: 50px;"></div>
-  <div class="firework" style="top: 100px; right: 50px;"></div>
+  <button onclick="toggleMusic()">▶️ 播放音樂</button>
 
   <script>
-    // 幻燈片功能
+    // 播放/暫停按鈕
+    const audio = document.getElementById('bgm');
+    let isPlaying = false;
+    function toggleMusic() {
+      if (isPlaying) {
+        audio.pause();
+        event.target.innerText = "▶️ 播放音樂";
+      } else {
+        audio.play();
+        event.target.innerText = "⏸️ 暫停音樂";
+      }
+      isPlaying = !isPlaying;
+    }
+
+    // 照片輪播
     let slideIndex = 0;
     showSlides();
 
-    function showSlides() {
-      let i;
+    function plusSlides(n) {
+      slideIndex += n;
+      showSlides(slideIndex);
+    }
+
+    function showSlides(n) {
       let slides = document.getElementsByClassName("slide");
-      for (i = 0; i < slides.length; i++) {
+      if (n >= slides.length) { slideIndex = 0; }
+      if (n < 0) { slideIndex = slides.length - 1; }
+      for (let i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
       }
+      slides[slideIndex].style.display = "block";
+    }
+
+    function autoSlide() {
       slideIndex++;
-      if (slideIndex > slides.length) {slideIndex = 1}
-      slides[slideIndex-1].style.display = "block";
-      setTimeout(showSlides, 3000); // 自動切換
+      showSlides(slideIndex);
     }
 
-    function plusSlides(n) {
-      slideIndex += n - 1;
-      showSlides();
-    }
-
-    // 驚喜按鈕觸發動畫
-    document.getElementById('surpriseBtn').addEventListener('click', function() {
-      const person = document.getElementById('cakePerson');
-      person.classList.add('animate-in');
-    });
+    setInterval(autoSlide, 3000); // 每4秒自動換圖
   </script>
+
 </body>
 </html>
