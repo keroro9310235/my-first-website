@@ -1,213 +1,268 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>阿蝶生日快樂 我愛你</title>
-  <style>
-    body {
-      font-family: "Arial", sans-serif;
-      background-color: #fff8f0;
-      color: #333;
-      text-align: center;
-      padding: 50px;
-      overflow: hidden;
-    }
-
-    h1 {
-      font-size: 48px;
-      color: #d94f4f;
-      margin-bottom: 30px;
-    }
-
-    .slideshow-container {
-      position: relative;
-      max-width: 400px;
-      margin: auto;
-    }
-
-    .slide {
-      display: none;
-    }
-
-    .slide img {
-  width: 300px;
-  height: 400px;
-  object-fit: cover;  /* 保持圖片比例並裁切，防止變形 */
-  border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-    .prev, .next {
-      cursor: pointer;
-      position: absolute;
-      top: 50%;
-      width: auto;
-      padding: 10px;
-      color: white;
-      font-weight: bold;
-      font-size: 24px;
-      background-color: rgba(0,0,0,0.5);
-      border-radius: 0 3px 3px 0;
-      user-select: none;
-      transform: translateY(-50%);
-      z-index: 2;
-}
-
-.prev {
-  left: -60px; /* 往照片左邊外推 */
-}
-
-.next {
-  right: -60px; /* 往照片右邊外推 */
-}
-    }
-
-    .next {
-      right: 0;
-      border-radius: 3px 0 0 3px;
-    }
-
-    p {
-      margin-top: 20px;
-      font-size: 18px;
-    }
-
-    button {
-      margin-top: 30px;
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #d94f4f;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #b83c3c;
-    }
-
-    .firework {
-      position: absolute;
-      top: 50%;
-      width: 10px;
-      height: 10px;
-      background: transparent;
-      border-radius: 50%;
-      animation: explode 1s ease-out infinite;
-    }
-
-    .firework::before, .firework::after {
-      content: '';
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: red;
-      .slide img: 50%;
-      top: 50%;
-      left: 50%;
-      animation: particle 1s ease-out infinite;
-    }
-
-    .firework::after {
-      background: yellow;
-      animation-delay: 0.5s;
-    }
-
-    @keyframes explode {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(40); opacity: 0; }
-    }
-
-    @keyframes particle {
-      0% { transform: translate(0, 0); opacity: 1; }
-      100% { transform: translate(30px, -30px); opacity: 0; }
-    }
-
-    .left-firework {
-      left: 10%;
-    }
-
-    .right-firework {
-      right: 10%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 股市線圖分析師</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-900 text-white">
 
-  <h1>阿蝶生日快樂 我愛你 ❤️</h1>
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">
+                AI 股市線圖分析師
+            </h1>
+            <p class="text-gray-400 mt-2">上傳您的股票 K 線圖，讓 AI 為您洞察先機</p>
+        </header>
 
-  <div class="firework left-firework"></div>
-  <div class="firework right-firework"></div>
+        <main class="space-y-8">
+            <!-- Upload Section -->
+            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：上傳線圖</h2>
+                <div class="flex flex-col items-center justify-center bg-gray-800/50 p-6 rounded-lg border-2 border-dashed border-gray-500 hover:border-sky-400 transition-all duration-300">
+                    <input type="file" id="chart-uploader" class="hidden" accept="image/*">
+                    <label for="chart-uploader" id="upload-label" class="cursor-pointer text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <span class="mt-2 block text-sm font-medium text-gray-300">點擊此處選擇圖片</span>
+                        <p class="text-xs text-gray-500">或將圖片拖曳到這裡</p>
+                        <p class="text-xs text-gray-500 mt-1">支援 PNG, JPG, GIF 等格式</p>
+                    </label>
+                </div>
+            </div>
 
-  <div class="slideshow-container">
-    <div class="slide"><img src="photo1.jpg" alt="photo1"></div>
-    <div class="slide"><img src="photo2.jpg" alt="photo2"></div>
-    <div class="slide"><img src="photo3.jpg" alt="photo3"></div>
-    <div class="slide"><img src="photo4.jpg" alt="photo4"></div>
-    <div class="slide"><img src="photo5.jpg" alt="photo5"></div>
-    <div class="slide"><img src="photo6.jpg" alt="photo6"></div>
-    <div class="slide"><img src="photo7.jpg" alt="photo7"></div>
-    <div class="slide"><img src="photo8.jpg" alt="photo8"></div>
-    <div class="slide"><img src="photo9.jpg" alt="photo9"></div>
-    <div class="slide"><img src="photo10.jpg" alt="photo10"></div>
+            <!-- Image Preview and Analysis Trigger -->
+            <div id="image-preview-container" class="hidden glass-effect rounded-2xl p-6 shadow-2xl">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟二：確認圖片並開始分析</h2>
+                <div class="mt-4 text-center">
+                    <img id="image-preview" src="#" alt="上傳的圖片預覽" class="max-w-full max-h-[400px] mx-auto rounded-lg shadow-md">
+                    <button id="analyze-button" class="mt-6 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
+                        🤖 開始 AI 分析
+                    </button>
+                </div>
+            </div>
 
-    <a class="prev" onclick="plusSlides(-1)">❮</a>
-    <a class="next" onclick="plusSlides(1)">❯</a>
-  </div>
+            <!-- Analysis Result Section -->
+            <div id="result-container" class="hidden glass-effect rounded-2xl p-6 shadow-2xl">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">📈 AI 分析結果</h2>
+                <div id="loader" class="hidden flex justify-center items-center my-8">
+                    <div class="loader"></div>
+                    <p class="ml-4 text-lg">AI 正在高速運算中，請稍候...</p>
+                </div>
+                <div id="analysis-output" class="text-gray-300 leading-relaxed prose prose-invert max-w-none"></div>
+            </div>
+        </main>
 
-  <p>我們的甜蜜回憶 ❤️</p>
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>&copy; 2025 AI 股市線圖分析師. 僅供學術研究與技術展示，不構成任何投資建議。</p>
+        </footer>
+    </div>
 
-  <!-- 音樂播放器 -->
-  <audio id="bgm" loop>
-    <source src="bg-music.mp3" type="audio/mpeg">
-    您的瀏覽器不支援音樂播放。
-  </audio>
+    <script>
+        const uploader = document.getElementById('chart-uploader');
+        const uploadLabel = document.getElementById('upload-label');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const analyzeButton = document.getElementById('analyze-button');
+        const resultContainer = document.getElementById('result-container');
+        const loader = document.getElementById('loader');
+        const analysisOutput = document.getElementById('analysis-output');
 
-  <button onclick="toggleMusic()">▶️ 播放音樂</button>
+        let base64ImageData = null;
 
-  <script>
-    // 播放/暫停按鈕
-    const audio = document.getElementById('bgm');
-    let isPlaying = false;
-    function toggleMusic() {
-      if (isPlaying) {
-        audio.pause();
-        event.target.innerText = "▶️ 播放音樂";
-      } else {
-        audio.play();
-        event.target.innerText = "⏸️ 暫停音樂";
-      }
-      isPlaying = !isPlaying;
-    }
+        // --- Drag and Drop functionality ---
+        const dropArea = uploadLabel.parentElement;
 
-    // 照片輪播
-    let slideIndex = 0;
-    showSlides();
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
 
-    function plusSlides(n) {
-      slideIndex += n;
-      showSlides(slideIndex);
-    }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('border-sky-400'), false);
+        });
 
-    function showSlides(n) {
-      let slides = document.getElementsByClassName("slide");
-      if (n >= slides.length) { slideIndex = 0; }
-      if (n < 0) { slideIndex = slides.length - 1; }
-      for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = "none";
-      }
-      slides[slideIndex].style.display = "block";
-    }
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('border-sky-400'), false);
+        });
 
-    function autoSlide() {
-      slideIndex++;
-      showSlides(slideIndex);
-    }
+        dropArea.addEventListener('drop', handleDrop, false);
 
-    setInterval(autoSlide, 3000); // 每4秒自動換圖
-  </script>
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
 
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                uploader.files = files;
+                handleFiles(files);
+            }
+        }
+
+        // --- File uploader change event ---
+        uploader.addEventListener('change', (event) => {
+            const files = event.target.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        imagePreview.src = e.target.result;
+                        base64ImageData = e.target.result.split(',')[1];
+                        imagePreviewContainer.classList.remove('hidden');
+                        resultContainer.classList.add('hidden');
+                        analysisOutput.innerHTML = '';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('請上傳有效的圖片檔案。');
+                }
+            }
+        }
+
+        // --- Analyze button click event ---
+        analyzeButton.addEventListener('click', async () => {
+            if (!base64ImageData) {
+                alert('請先上傳一張圖片。');
+                return;
+            }
+
+            resultContainer.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            analysisOutput.innerHTML = '';
+
+            try {
+                // This is where the call to the AI model happens
+                const analysisText = await getAIAnalysis(base64ImageData);
+                
+                // Format the output with Markdown-like styling
+                const formattedText = analysisText
+                    .replace(/### (.*?)\n/g, '<h3 class="text-xl font-semibold text-sky-400 mt-4 mb-2">$1</h3>')
+                    .replace(/\\n\*/g, '<br/>*') // Legacy newline support
+                    .replace(/\n\*/g, '<br/>*')
+                    .replace(/\* \*\*(.*?)\*\*:/g, '<p class="mt-2"><strong class="text-blue-400">$1:</strong>')
+                    .replace(/\n/g, '<br>');
+
+
+                analysisOutput.innerHTML = formattedText;
+
+            } catch (error) {
+                console.error('分析時發生錯誤:', error);
+                analysisOutput.innerHTML = `<p class="text-red-400">分析失敗。請檢查您的網路連線或稍後再試。錯誤訊息: ${error.message}</p>`;
+            } finally {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+            }
+        });
+
+        /**
+         * Sends image data to Gemini for analysis.
+         * @param {string} base64ImageData The Base64 encoded image data.
+         * @returns {Promise<string>} The analysis text from the AI.
+         */
+        async function getAIAnalysis(base64ImageData) {
+            const apiKey = ""; // API Key is handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const prompt = `
+            你是一位專業的中文股市技術分析師。這是一張股票K線圖。
+            請你根據這張圖，提供一份專業、詳細但易於理解的技術分析報告。請遵循以下結構：
+
+            1.  **綜合評論：** 首先，用一兩句話總結你對這張圖的整體看法（例如：處於上升趨勢、盤整階段、出現空頭訊號等）。
+            2.  **趨勢分析：** 判斷目前的長期和短期趨勢是什麼？是上漲、下跌還是盤整？可以參考均線（如果圖中有）或價格高低點的走勢。
+            3.  **K線與型態分析：**
+                * 是否有出現任何經典的圖表型態（例如：W底、M頭、頭肩頂/底、三角形、旗形等）？請明確指出並解釋其意義。
+                * 觀察近期的K線組合，是否有特殊的訊號（例如：長紅K、長黑K、十字線、吞噬型態、晨星/夜星等）？
+            4.  **重要價位：** 找出圖中的關鍵支撐和壓力價位在哪裡。
+            5.  **操作建議：**
+                * 基於以上的分析，你會給出什麼樣的操作建議？（例如：偏多操作、逢高減碼、觀望、突破壓力後可追...）
+                * **免責聲明：** 最後，請務必加上一行免責聲明：「此分析僅為技術交流，不構成任何投資建議，請謹慎評估風險。」
+
+            請用專業、客觀的語氣進行分析。
+            `;
+
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: prompt },
+                            {
+                                inlineData: {
+                                    mimeType: "image/png",
+                                    data: base64ImageData
+                                }
+                            }
+                        ]
+                    }
+                ],
+                 generationConfig: {
+                    temperature: 0.3,
+                    topP: 0.9,
+                    topK: 40,
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`API 請求失敗，狀態碼：${response.status}. 回應: ${errorBody}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                // Check for safety ratings or other issues
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                     throw new Error(`請求因安全因素被阻擋: ${result.promptFeedback.blockReason}`);
+                }
+                throw new Error("從 API 收到的回應格式無效或為空。");
+            }
+        }
+    </script>
 </body>
 </html>
