@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
@@ -54,9 +54,20 @@
         </header>
 
         <main class="space-y-8">
+            <!-- NEW: API Key Section -->
+            <section id="apiKeySection" class="glass-card p-6 sm:p-8">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：設定 API 金鑰</h2>
+                <label for="apiKeyInput" class="block mb-2 text-sm font-medium text-gray-300">您的 Google AI API 金鑰</label>
+                <input type="password" id="apiKeyInput" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="請在此貼上您的 API 金鑰">
+                <p class="mt-2 text-xs text-gray-500">
+                    本網站需要您的 Google AI API 金鑰才能運作。
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="font-medium text-blue-400 hover:underline">點此前往 Google AI Studio 取得免費金鑰</a>。
+                </p>
+            </section>
+
             <!-- 1. 上傳區塊 -->
             <section id="uploadSection" class="glass-card p-6 sm:p-8">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：上傳K線圖</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟二：上傳K線圖</h2>
                 <label for="fileUpload" class="upload-box w-full p-10 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300">
                     <svg class="w-16 h-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16v1a2 2 0 01-2 2H3c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h2m12 14v-2a2 2 0 00-2-2h-2m-4-4h.01"></path></svg>
                     <p id="uploadText" class="text-gray-400 text-center">點擊此處選擇圖檔，或將圖檔拖曳至此</p>
@@ -67,10 +78,10 @@
 
             <!-- 2. 預覽與分析按鈕 -->
             <section id="previewSection" class="glass-card p-6 sm:p-8 hidden">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟二：確認圖片並開始分析</h2>
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟三：確認圖片並開始分析</h2>
                 <div class="mt-4 flex flex-col items-center">
                     <img id="imagePreview" src="" alt="圖片預覽" class="max-w-full h-auto max-h-96 rounded-lg shadow-lg border-2 border-gray-600">
-                    <button id="analyzeBtn" class="btn-primary w-full sm:w-1/2 mt-6 py-3 text-lg font-bold text-white rounded-lg shadow-md disabled:opacity-50">
+                    <button id="analyzeBtn" class="btn-primary w-full sm:w-1/2 mt-6 py-3 text-lg font-bold text-white rounded-lg shadow-md" disabled>
                         開始分析
                     </button>
                 </div>
@@ -168,6 +179,7 @@
         const analysisModel = document.getElementById('analysisModel');
         const positivePoints = document.getElementById('positivePoints');
         const negativePoints = document.getElementById('negativePoints');
+        const apiKeyInput = document.getElementById('apiKeyInput'); // New element
 
         let base64ImageData = "";
 
@@ -182,11 +194,19 @@
             progressCircle.style.strokeDashoffset = offset;
             percentageText.textContent = `${Math.round(percent)}%`;
         }
-        
-        // 點擊上傳區域觸發檔案選擇
-        uploadBox.addEventListener('click', () => fileUpload.click());
 
-        // 處理拖曳事件
+        function checkCanAnalyze() {
+            if (base64ImageData && apiKeyInput.value.trim() !== '') {
+                analyzeBtn.disabled = false;
+            } else {
+                analyzeBtn.disabled = true;
+            }
+        }
+        
+        // Event listeners
+        uploadBox.addEventListener('click', () => fileUpload.click());
+        apiKeyInput.addEventListener('input', checkCanAnalyze);
+
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadBox.addEventListener(eventName, preventDefaults, false);
         });
@@ -208,7 +228,6 @@
             }
         });
 
-        // 處理檔案選擇
         fileUpload.addEventListener('change', (event) => {
             const files = event.target.files;
             if (files.length > 0) {
@@ -229,32 +248,29 @@
                 
                 uploadText.textContent = `已選擇檔案: ${file.name}`;
                 previewSection.classList.remove('hidden');
-                analyzeBtn.disabled = false;
-                resultSection.classList.add('hidden'); // Hide previous results
+                resultSection.classList.add('hidden');
+                checkCanAnalyze();
             };
             reader.readAsDataURL(file);
         }
 
-        // 點擊分析按鈕
         analyzeBtn.addEventListener('click', () => {
-            if (!base64ImageData) {
-                alert('請先選擇一張圖片！');
+            if (!base64ImageData || !apiKeyInput.value) {
+                alert('請先選擇一張圖片並輸入您的 API 金鑰！');
                 return;
             }
             analyzeImage();
         });
 
         async function analyzeImage() {
-            // 顯示 Loading 動畫，隱藏舊結果
             resultSection.classList.remove('hidden');
             loadingSpinner.classList.remove('hidden');
             resultContent.classList.add('hidden');
             errorMessage.classList.add('hidden');
 
-            const apiKey = "AIzaSyAYQN2iY8tG3yP88AlUypgKzKe1Zw6uBbY"; // API 金鑰會由 Canvas 環境自動提供
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const userApiKey = apiKeyInput.value.trim(); // Use user-provided key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userApiKey}`;
 
-            // 系統提示，定義 AI 的角色和分析模型
             const systemPrompt = `你是一位頂尖的股票技術分析專家。你的知識庫來自一位資深投資人提供的20多張成功飆股K線圖範例。你的任務是分析使用者上傳的新K線圖，並判斷其符合這位投資人偏好的「飆股型態」的程度。
 
             你已經學習到兩種主要的飆股模型：
@@ -273,7 +289,6 @@
 
             你的分析必須完全基於以上兩種模型。`;
 
-            // JSON 結構化輸出 Schema
             const schema = {
                 type: "OBJECT",
                 properties: {
@@ -323,7 +338,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API 請求失敗，狀態碼: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(`API 請求失敗: ${errorData.error?.message || response.statusText}`);
                 }
 
                 const result = await response.json();
@@ -345,14 +361,10 @@
         }
 
         function displayResults(data) {
-            // Update percentage circle
             setProgress(data.matchPercentage || 0);
-
-            // Update text content
             summaryText.textContent = data.summary || '無法提供總結。';
             analysisModel.textContent = data.analysisModel || '未知';
 
-            // Populate lists
             positivePoints.innerHTML = (data.positivePoints || []).map(point => `<li>${point}</li>`).join('');
             if ((data.positivePoints || []).length === 0) {
                 positivePoints.innerHTML = '<li>無明顯得分項。</li>';
@@ -363,7 +375,6 @@
                  negativePoints.innerHTML = '<li>無明顯失分項。</li>';
             }
 
-            // Show results
             resultContent.classList.remove('hidden');
         }
 
