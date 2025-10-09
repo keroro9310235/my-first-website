@@ -1,268 +1,377 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 股市線圖分析師</title>
+    <title>飆股型態分析師</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* 自訂樣式 */
         body {
-            font-family: 'Noto Sans TC', sans-serif;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #111827; /* Dark gray background */
         }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
+        .glass-card {
+            background: rgba(31, 41, 55, 0.6); /* Semi-transparent dark background */
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .upload-box:hover {
+            border-color: #3b82f6; /* Blue border on hover */
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-primary:disabled {
+            background-color: #4b5563;
+            cursor: not-allowed;
+        }
+        /* 讓 input[type=file] 隱藏 */
+        input[type="file"] {
+            display: none;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white">
-
-    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+<body class="text-gray-200">
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
         
-        <!-- Header -->
         <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-600">
-                AI 股市線圖分析師
+            <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
+                飆股型態分析師
             </h1>
-            <p class="text-gray-400 mt-2">上傳您的股票 K 線圖，讓 AI 為您洞察先機</p>
+            <p class="text-gray-400 mt-2 text-lg">上傳您的K線圖，讓我為您分析飆股潛力</p>
         </header>
 
         <main class="space-y-8">
-            <!-- Upload Section -->
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：上傳線圖</h2>
-                <div class="flex flex-col items-center justify-center bg-gray-800/50 p-6 rounded-lg border-2 border-dashed border-gray-500 hover:border-sky-400 transition-all duration-300">
-                    <input type="file" id="chart-uploader" class="hidden" accept="image/*">
-                    <label for="chart-uploader" id="upload-label" class="cursor-pointer text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        <span class="mt-2 block text-sm font-medium text-gray-300">點擊此處選擇圖片</span>
-                        <p class="text-xs text-gray-500">或將圖片拖曳到這裡</p>
-                        <p class="text-xs text-gray-500 mt-1">支援 PNG, JPG, GIF 等格式</p>
-                    </label>
-                </div>
-            </div>
+            <!-- 1. 上傳區塊 -->
+            <section id="uploadSection" class="glass-card p-6 sm:p-8">
+                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：上傳K線圖</h2>
+                <label for="fileUpload" class="upload-box w-full p-10 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300">
+                    <svg class="w-16 h-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 16v1a2 2 0 01-2 2H3c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h2m12 14v-2a2 2 0 00-2-2h-2m-4-4h.01"></path></svg>
+                    <p id="uploadText" class="text-gray-400 text-center">點擊此處選擇圖檔，或將圖檔拖曳至此</p>
+                    <p class="text-xs text-gray-500 mt-2">（支援 PNG, JPG, GIF 等格式）</p>
+                </label>
+                <input type="file" id="fileUpload" accept="image/*">
+            </section>
 
-            <!-- Image Preview and Analysis Trigger -->
-            <div id="image-preview-container" class="hidden glass-effect rounded-2xl p-6 shadow-2xl">
+            <!-- 2. 預覽與分析按鈕 -->
+            <section id="previewSection" class="glass-card p-6 sm:p-8 hidden">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟二：確認圖片並開始分析</h2>
-                <div class="mt-4 text-center">
-                    <img id="image-preview" src="#" alt="上傳的圖片預覽" class="max-w-full max-h-[400px] mx-auto rounded-lg shadow-md">
-                    <button id="analyze-button" class="mt-6 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300">
-                        🤖 開始 AI 分析
+                <div class="mt-4 flex flex-col items-center">
+                    <img id="imagePreview" src="" alt="圖片預覽" class="max-w-full h-auto max-h-96 rounded-lg shadow-lg border-2 border-gray-600">
+                    <button id="analyzeBtn" class="btn-primary w-full sm:w-1/2 mt-6 py-3 text-lg font-bold text-white rounded-lg shadow-md disabled:opacity-50">
+                        開始分析
                     </button>
                 </div>
-            </div>
+            </section>
 
-            <!-- Analysis Result Section -->
-            <div id="result-container" class="hidden glass-effect rounded-2xl p-6 shadow-2xl">
-                <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">📈 AI 分析結果</h2>
-                <div id="loader" class="hidden flex justify-center items-center my-8">
-                    <div class="loader"></div>
-                    <p class="ml-4 text-lg">AI 正在高速運算中，請稍候...</p>
+            <!-- 3. 分析結果 -->
+            <section id="resultSection" class="glass-card p-6 sm:p-8 hidden">
+                 <h2 class="text-2xl font-semibold mb-6 border-b border-gray-600 pb-2">分析結果</h2>
+                
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="text-center py-10 hidden">
+                    <svg class="animate-spin h-12 w-12 text-blue-400 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="mt-4 text-lg text-gray-400">正在運用飆股模型進行深度分析，請稍候...</p>
                 </div>
-                <div id="analysis-output" class="text-gray-300 leading-relaxed prose prose-invert max-w-none"></div>
-            </div>
-        </main>
 
-        <footer class="text-center mt-12 text-gray-500 text-sm">
-            <p>&copy; 2025 AI 股市線圖分析師. 僅供學術研究與技術展示，不構成任何投資建議。</p>
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden bg-red-900 border border-red-600 text-red-200 px-4 py-3 rounded-lg" role="alert">
+                    <strong class="font-bold">分析失敗！</strong>
+                    <span id="errorText" class="block sm:inline"></span>
+                </div>
+
+                <!-- Result Content -->
+                <div id="resultContent" class="hidden">
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+                        <!-- Percentage Circle -->
+                        <div class="relative w-48 h-48 sm:w-56 sm:h-56">
+                            <svg class="w-full h-full" viewBox="0 0 120 120">
+                                <circle class="text-gray-700" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60" />
+                                <circle id="progressCircle" class="progress-ring__circle text-blue-400" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60" />
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="percentageText" class="text-4xl sm:text-5xl font-bold text-white">0%</span>
+                                <span class="text-sm text-gray-400">符合度</span>
+                            </div>
+                        </div>
+                        <!-- Summary -->
+                        <div class="flex-1 text-center md:text-left">
+                            <p class="text-lg text-gray-400">判斷模型：<span id="analysisModel" class="font-semibold text-teal-300"></span></p>
+                            <p id="summaryText" class="text-2xl sm:text-3xl font-semibold mt-2"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Positive Points -->
+                        <div>
+                            <h3 class="text-xl font-semibold flex items-center text-green-400">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                主要得分項
+                            </h3>
+                            <ul id="positivePoints" class="mt-3 list-disc list-inside space-y-2 text-gray-300">
+                                <!-- Points will be inserted here -->
+                            </ul>
+                        </div>
+                        <!-- Negative Points -->
+                        <div>
+                            <h3 class="text-xl font-semibold flex items-center text-red-400">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                主要失分項
+                            </h3>
+                            <ul id="negativePoints" class="mt-3 list-disc list-inside space-y-2 text-gray-300">
+                                <!-- Points will be inserted here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+        <footer class="text-center text-gray-600 mt-12 text-sm">
+            <p>&copy; 2025 飆股型態分析師. All rights reserved.</p>
+            <p class="mt-1">本分析僅供技術交流，不構成任何投資建議。</p>
         </footer>
+
     </div>
 
     <script>
-        const uploader = document.getElementById('chart-uploader');
-        const uploadLabel = document.getElementById('upload-label');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
-        const imagePreview = document.getElementById('image-preview');
-        const analyzeButton = document.getElementById('analyze-button');
-        const resultContainer = document.getElementById('result-container');
-        const loader = document.getElementById('loader');
-        const analysisOutput = document.getElementById('analysis-output');
+        const fileUpload = document.getElementById('fileUpload');
+        const uploadBox = document.querySelector('.upload-box');
+        const uploadText = document.getElementById('uploadText');
+        const previewSection = document.getElementById('previewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultSection = document.getElementById('resultSection');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const resultContent = document.getElementById('resultContent');
+        const progressCircle = document.getElementById('progressCircle');
+        const percentageText = document.getElementById('percentageText');
+        const summaryText = document.getElementById('summaryText');
+        const analysisModel = document.getElementById('analysisModel');
+        const positivePoints = document.getElementById('positivePoints');
+        const negativePoints = document.getElementById('negativePoints');
 
-        let base64ImageData = null;
+        let base64ImageData = "";
 
-        // --- Drag and Drop functionality ---
-        const dropArea = uploadLabel.parentElement;
+        // 設定進度環的半徑與周長
+        const radius = progressCircle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressCircle.style.strokeDashoffset = circumference;
 
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            percentageText.textContent = `${Math.round(percent)}%`;
+        }
+        
+        // 點擊上傳區域觸發檔案選擇
+        uploadBox.addEventListener('click', () => fileUpload.click());
+
+        // 處理拖曳事件
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-            document.body.addEventListener(eventName, preventDefaults, false);
+            uploadBox.addEventListener(eventName, preventDefaults, false);
         });
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.add('border-sky-400'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => dropArea.classList.remove('border-sky-400'), false);
-        });
-
-        dropArea.addEventListener('drop', handleDrop, false);
 
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
+        
+        uploadBox.addEventListener('dragover', () => uploadBox.classList.add('border-blue-500', 'bg-gray-800'));
+        uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('border-blue-500', 'bg-gray-800'));
 
-        function handleDrop(e) {
+        uploadBox.addEventListener('drop', (e) => {
+            uploadBox.classList.remove('border-blue-500', 'bg-gray-800');
             const dt = e.dataTransfer;
             const files = dt.files;
             if (files.length > 0) {
-                uploader.files = files;
-                handleFiles(files);
+                handleFile(files[0]);
             }
-        }
-
-        // --- File uploader change event ---
-        uploader.addEventListener('change', (event) => {
-            const files = event.target.files;
-            handleFiles(files);
         });
 
-        function handleFiles(files) {
+        // 處理檔案選擇
+        fileUpload.addEventListener('change', (event) => {
+            const files = event.target.files;
             if (files.length > 0) {
-                const file = files[0];
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        imagePreview.src = e.target.result;
-                        base64ImageData = e.target.result.split(',')[1];
-                        imagePreviewContainer.classList.remove('hidden');
-                        resultContainer.classList.add('hidden');
-                        analysisOutput.innerHTML = '';
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('請上傳有效的圖片檔案。');
-                }
+                handleFile(files[0]);
             }
-        }
+        });
 
-        // --- Analyze button click event ---
-        analyzeButton.addEventListener('click', async () => {
-            if (!base64ImageData) {
-                alert('請先上傳一張圖片。');
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('請上傳圖片格式的檔案！');
                 return;
             }
 
-            resultContainer.classList.remove('hidden');
-            loader.classList.remove('hidden');
-            loader.classList.add('flex');
-            analysisOutput.innerHTML = '';
-
-            try {
-                // This is where the call to the AI model happens
-                const analysisText = await getAIAnalysis(base64ImageData);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                imagePreview.src = reader.result;
+                base64ImageData = reader.result.split(',')[1];
                 
-                // Format the output with Markdown-like styling
-                const formattedText = analysisText
-                    .replace(/### (.*?)\n/g, '<h3 class="text-xl font-semibold text-sky-400 mt-4 mb-2">$1</h3>')
-                    .replace(/\\n\*/g, '<br/>*') // Legacy newline support
-                    .replace(/\n\*/g, '<br/>*')
-                    .replace(/\* \*\*(.*?)\*\*:/g, '<p class="mt-2"><strong class="text-blue-400">$1:</strong>')
-                    .replace(/\n/g, '<br>');
+                uploadText.textContent = `已選擇檔案: ${file.name}`;
+                previewSection.classList.remove('hidden');
+                analyzeBtn.disabled = false;
+                resultSection.classList.add('hidden'); // Hide previous results
+            };
+            reader.readAsDataURL(file);
+        }
 
-
-                analysisOutput.innerHTML = formattedText;
-
-            } catch (error) {
-                console.error('分析時發生錯誤:', error);
-                analysisOutput.innerHTML = `<p class="text-red-400">分析失敗。請檢查您的網路連線或稍後再試。錯誤訊息: ${error.message}</p>`;
-            } finally {
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
+        // 點擊分析按鈕
+        analyzeBtn.addEventListener('click', () => {
+            if (!base64ImageData) {
+                alert('請先選擇一張圖片！');
+                return;
             }
+            analyzeImage();
         });
 
-        /**
-         * Sends image data to Gemini for analysis.
-         * @param {string} base64ImageData The Base64 encoded image data.
-         * @returns {Promise<string>} The analysis text from the AI.
-         */
-        async function getAIAnalysis(base64ImageData) {
-            const apiKey = ""; // API Key is handled by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        async function analyzeImage() {
+            // 顯示 Loading 動畫，隱藏舊結果
+            resultSection.classList.remove('hidden');
+            loadingSpinner.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+            errorMessage.classList.add('hidden');
 
-            const prompt = `
-            你是一位專業的中文股市技術分析師。這是一張股票K線圖。
-            請你根據這張圖，提供一份專業、詳細但易於理解的技術分析報告。請遵循以下結構：
+            const apiKey = "AIzaSyAYQN2iY8tG3yP88AlUypgKzKe1Zw6uBbY"; // API 金鑰會由 Canvas 環境自動提供
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-            1.  **綜合評論：** 首先，用一兩句話總結你對這張圖的整體看法（例如：處於上升趨勢、盤整階段、出現空頭訊號等）。
-            2.  **趨勢分析：** 判斷目前的長期和短期趨勢是什麼？是上漲、下跌還是盤整？可以參考均線（如果圖中有）或價格高低點的走勢。
-            3.  **K線與型態分析：**
-                * 是否有出現任何經典的圖表型態（例如：W底、M頭、頭肩頂/底、三角形、旗形等）？請明確指出並解釋其意義。
-                * 觀察近期的K線組合，是否有特殊的訊號（例如：長紅K、長黑K、十字線、吞噬型態、晨星/夜星等）？
-            4.  **重要價位：** 找出圖中的關鍵支撐和壓力價位在哪裡。
-            5.  **操作建議：**
-                * 基於以上的分析，你會給出什麼樣的操作建議？（例如：偏多操作、逢高減碼、觀望、突破壓力後可追...）
-                * **免責聲明：** 最後，請務必加上一行免責聲明：「此分析僅為技術交流，不構成任何投資建議，請謹慎評估風險。」
+            // 系統提示，定義 AI 的角色和分析模型
+            const systemPrompt = `你是一位頂尖的股票技術分析專家。你的知識庫來自一位資深投資人提供的20多張成功飆股K線圖範例。你的任務是分析使用者上傳的新K線圖，並判斷其符合這位投資人偏好的「飆股型態」的程度。
 
-            請用專業、客觀的語氣進行分析。
-            `;
+            你已經學習到兩種主要的飆股模型：
 
-            const payload = {
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            { text: prompt },
-                            {
-                                inlineData: {
-                                    mimeType: "image/png",
-                                    data: base64ImageData
-                                }
-                            }
-                        ]
+            1.  **底部起漲模型**：
+                * 特徵A：股價經過長期的橫盤整理或築底，消化上方賣壓。
+                * 特徵B：短、中、長期移動平均線 (MA) 從發散到逐漸收斂糾結。
+                * 特徵C：出現一根帶有顯著成交量的長紅K棒，向上突破糾結的均線區。
+                * 特徵D：突破後，均線開始形成多頭排列 (短天期在上，長天期在下)。
+
+            2.  **中繼整理模型 (空中加油)**：
+                * 特徵A：股價已經歷一波強勁的初升段上漲。
+                * 特徵B：漲多後進行橫盤或小幅拉回整理，且整理期間「成交量萎縮」。
+                * 特徵C：股價在回檔時，於上升的關鍵均線 (如20MA或60MA) 獲得有力支撐。
+                * 特徵D：整理結束後，再次出現一根帶量的紅K棒，向上突破整理平台，續創新高。
+
+            你的分析必須完全基於以上兩種模型。`;
+
+            // JSON 結構化輸出 Schema
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    matchPercentage: { type: "NUMBER", description: "符合飆股型態的百分比 (0-100的數字)" },
+                    summary: { type: "STRING", description: "總結，用一句話簡潔有力地說明結論" },
+                    analysisModel: { type: "STRING", description: "判斷主要符合的模型 ('底部起漲模型', '中繼整理模型', '混合型', 或 '尚不符合')" },
+                    positivePoints: {
+                        type: "ARRAY",
+                        items: { "type": "STRING" },
+                        description: "得分項，條列式說明圖片中符合飆股特徵的優點"
+                    },
+                    negativePoints: {
+                        type: "ARRAY",
+                        items: { "type": "STRING" },
+                        description: "失分項，條列式說明圖片中不符合飆股特徵或有疑慮的缺點"
                     }
-                ],
-                 generationConfig: {
-                    temperature: 0.3,
-                    topP: 0.9,
-                    topK: 40,
-                }
+                },
+                required: ["matchPercentage", "summary", "analysisModel", "positivePoints", "negativePoints"]
             };
 
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errorBody = await response.text();
-                throw new Error(`API 請求失敗，狀態碼：${response.status}. 回應: ${errorBody}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
-                return result.candidates[0].content.parts[0].text;
-            } else {
-                // Check for safety ratings or other issues
-                if (result.promptFeedback && result.promptFeedback.blockReason) {
-                     throw new Error(`請求因安全因素被阻擋: ${result.promptFeedback.blockReason}`);
+            const payload = {
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                contents: [{
+                    parts: [
+                        { text: "請根據你學習到的兩種飆股模型，分析這張K線圖。提供一個0到100的符合度百分比，並給出詳細的得分項與失分項。請務必使用 JSON 格式輸出。" },
+                        {
+                            inlineData: {
+                                mimeType: "image/png",
+                                data: base64ImageData
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: schema,
                 }
-                throw new Error("從 API 收到的回應格式無效或為空。");
+            };
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 請求失敗，狀態碼: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                const candidate = result.candidates?.[0];
+                if (!candidate || !candidate.content?.parts?.[0]?.text) {
+                     throw new Error('從 API 回應中無法解析出有效的分析結果。');
+                }
+
+                const analysisData = JSON.parse(candidate.content.parts[0].text);
+                displayResults(analysisData);
+
+            } catch (error) {
+                console.error('分析過程中發生錯誤:', error);
+                displayError(`分析時發生錯誤: ${error.message}`);
+            } finally {
+                loadingSpinner.classList.add('hidden');
             }
         }
+
+        function displayResults(data) {
+            // Update percentage circle
+            setProgress(data.matchPercentage || 0);
+
+            // Update text content
+            summaryText.textContent = data.summary || '無法提供總結。';
+            analysisModel.textContent = data.analysisModel || '未知';
+
+            // Populate lists
+            positivePoints.innerHTML = (data.positivePoints || []).map(point => `<li>${point}</li>`).join('');
+            if ((data.positivePoints || []).length === 0) {
+                positivePoints.innerHTML = '<li>無明顯得分項。</li>';
+            }
+
+            negativePoints.innerHTML = (data.negativePoints || []).map(point => `<li>${point}</li>`).join('');
+            if ((data.negativePoints || []).length === 0) {
+                 negativePoints.innerHTML = '<li>無明顯失分項。</li>';
+            }
+
+            // Show results
+            resultContent.classList.remove('hidden');
+        }
+
+        function displayError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
     </script>
 </body>
 </html>
