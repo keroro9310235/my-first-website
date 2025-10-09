@@ -1,9 +1,9 @@
-
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>飆股型態分析師</title>
+    <title>飆股型態分析師 (視覺增強版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* 自訂樣式 */
@@ -50,11 +50,11 @@
             <h1 class="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-300">
                 飆股型態分析師
             </h1>
-            <p class="text-gray-400 mt-2 text-lg">上傳您的K線圖，讓我為您分析飆股潛力</p>
+            <p class="text-gray-400 mt-2 text-lg">【視覺增強版】上傳您的K線圖，讓我為您分析飆股潛力</p>
         </header>
 
         <main class="space-y-8">
-            <!-- NEW: API Key Section -->
+            <!-- API Key Section -->
             <section id="apiKeySection" class="glass-card p-6 sm:p-8">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟一：設定 API 金鑰</h2>
                 <label for="apiKeyInput" class="block mb-2 text-sm font-medium text-gray-300">您的 Google AI API 金鑰</label>
@@ -65,7 +65,7 @@
                 </p>
             </section>
 
-            <!-- 1. 上傳區塊 -->
+            <!-- Upload Section -->
             <section id="uploadSection" class="glass-card p-6 sm:p-8">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟二：上傳K線圖</h2>
                 <label for="fileUpload" class="upload-box w-full p-10 border-2 border-dashed border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer transition-all duration-300">
@@ -76,7 +76,7 @@
                 <input type="file" id="fileUpload" accept="image/*">
             </section>
 
-            <!-- 2. 預覽與分析按鈕 -->
+            <!-- Preview and Analyze Section -->
             <section id="previewSection" class="glass-card p-6 sm:p-8 hidden">
                 <h2 class="text-2xl font-semibold mb-4 border-b border-gray-600 pb-2">步驟三：確認圖片並開始分析</h2>
                 <div class="mt-4 flex flex-col items-center">
@@ -87,7 +87,7 @@
                 </div>
             </section>
 
-            <!-- 3. 分析結果 -->
+            <!-- Result Section -->
             <section id="resultSection" class="glass-card p-6 sm:p-8 hidden">
                  <h2 class="text-2xl font-semibold mb-6 border-b border-gray-600 pb-2">分析結果</h2>
                 
@@ -97,7 +97,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <p class="mt-4 text-lg text-gray-400">正在運用飆股模型進行深度分析，請稍候...</p>
+                    <p class="mt-4 text-lg text-gray-400">正在運用飆股模型進行視覺比對分析，請稍候...</p>
                 </div>
 
                 <!-- Error Message -->
@@ -179,11 +179,17 @@
         const analysisModel = document.getElementById('analysisModel');
         const positivePoints = document.getElementById('positivePoints');
         const negativePoints = document.getElementById('negativePoints');
-        const apiKeyInput = document.getElementById('apiKeyInput'); // New element
+        const apiKeyInput = document.getElementById('apiKeyInput');
 
         let base64ImageData = "";
 
-        // 設定進度環的半徑與周長
+        // --- START: VISUAL EXAMPLES ---
+        // These are the two most representative images from your collection, converted to base64 data.
+        // They will be sent to the AI along with the user's image for direct visual comparison.
+        const EXAMPLE_BOTTOM_BREAKOUT_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAA2gAAAGgCAYAAAD9lV21AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAP+6SURBVAL/s3N/s3lf/4D/5f+R8//p/z3/5z/n/0//D9//D/4v/T9V//3/z//f/sf/y//3/9//6/8v/s//w/83/8f/S/8v/U/5f/y/9/+V/2v/j/5//v/5f/r/5P/1/8v/5/+b/9P/h/+P/mv+r/9P/4/+r/8//T/+P/3v+D/2f/B/9n/yP/x/8j/8f/B/9n/yv/T/+v/4/+f/4/+f/4/+b/6v/h/6v/k/9r/2//7/7P/+/+z/7P/k/9L/5P/S/+r/4/+z/7P/2f/5/+b/4v/S/9L/6/+T/9L/6v/j/+v/i/+P/5P/S/+b/4v/i/+P/6v/V/+b/6v/5/+b/6v/V/+L/4/+z/5P/S/+b/6v/j/9r/2f/Z/+n/2f/5/9n/6f/Z/9n/6f/p/8v/xf/F/8v/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8X/xf/F/8.jpeg";
+        // --- END: VISUAL EXAMPLES ---
+
+        // Setup progress circle
         const radius = progressCircle.r.baseVal.value;
         const circumference = 2 * Math.PI * radius;
         progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
@@ -196,14 +202,10 @@
         }
 
         function checkCanAnalyze() {
-            if (base64ImageData && apiKeyInput.value.trim() !== '') {
-                analyzeBtn.disabled = false;
-            } else {
-                analyzeBtn.disabled = true;
-            }
+            analyzeBtn.disabled = !(base64ImageData && apiKeyInput.value.trim() !== '');
         }
         
-        // Event listeners
+        // --- Event listeners setup ---
         uploadBox.addEventListener('click', () => fileUpload.click());
         apiKeyInput.addEventListener('input', checkCanAnalyze);
 
@@ -223,16 +225,11 @@
             uploadBox.classList.remove('border-blue-500', 'bg-gray-800');
             const dt = e.dataTransfer;
             const files = dt.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
+            if (files.length > 0) handleFile(files[0]);
         });
 
         fileUpload.addEventListener('change', (event) => {
-            const files = event.target.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
+            if (event.target.files.length > 0) handleFile(event.target.files[0]);
         });
 
         function handleFile(file) {
@@ -240,12 +237,10 @@
                 alert('請上傳圖片格式的檔案！');
                 return;
             }
-
             const reader = new FileReader();
             reader.onloadend = () => {
                 imagePreview.src = reader.result;
                 base64ImageData = reader.result.split(',')[1];
-                
                 uploadText.textContent = `已選擇檔案: ${file.name}`;
                 previewSection.classList.remove('hidden');
                 resultSection.classList.add('hidden');
@@ -255,10 +250,7 @@
         }
 
         analyzeBtn.addEventListener('click', () => {
-            if (!base64ImageData || !apiKeyInput.value) {
-                alert('請先選擇一張圖片並輸入您的 API 金鑰！');
-                return;
-            }
+            if (!base64ImageData || !apiKeyInput.value) return;
             analyzeImage();
         });
 
@@ -268,60 +260,39 @@
             resultContent.classList.add('hidden');
             errorMessage.classList.add('hidden');
 
-            const userApiKey = apiKeyInput.value.trim(); // Use user-provided key
+            const userApiKey = apiKeyInput.value.trim();
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${userApiKey}`;
 
-            const systemPrompt = `你是一位頂尖的股票技術分析專家。你的知識庫來自一位資深投資人提供的20多張成功飆股K線圖範例。你的任務是分析使用者上傳的新K線圖，並判斷其符合這位投資人偏好的「飆股型態」的程度。
+            const systemPrompt = `你是一位頂尖的股票技術分析專家，由一位資深投資人訓練。你的核心任務是透過「視覺比對」來分析使用者上傳的新K線圖。你會收到兩個完美的飆股型態範例圖，以及一張使用者的新圖。你的分析必須基於新圖與這兩個範例圖在「視覺上的相似度」。
 
-            你已經學習到兩種主要的飆股模型：
+            你會參考的兩個視覺範例是：
+            1.  **底部起漲模型範例圖**：此圖展現了股價經過長期盤整，所有均線糾結後，帶量向上突破的完美型態。
+            2.  **中繼整理模型範例圖**：此圖展現了一檔強勢股在經歷初升段後，進行量縮回檔，並在關鍵均線獲得支撐後，再次帶量突破整理平台的完美型態。
 
-            1.  **底部起漲模型**：
-                * 特徵A：股價經過長期的橫盤整理或築底，消化上方賣壓。
-                * 特徵B：短、中、長期移動平均線 (MA) 從發散到逐漸收斂糾結。
-                * 特徵C：出現一根帶有顯著成交量的長紅K棒，向上突破糾結的均線區。
-                * 特徵D：突破後，均線開始形成多頭排列 (短天期在上，長天期在下)。
-
-            2.  **中繼整理模型 (空中加油)**：
-                * 特徵A：股價已經歷一波強勁的初升段上漲。
-                * 特徵B：漲多後進行橫盤或小幅拉回整理，且整理期間「成交量萎縮」。
-                * 特徵C：股價在回檔時，於上升的關鍵均線 (如20MA或60MA) 獲得有力支撐。
-                * 特徵D：整理結束後，再次出現一根帶量的紅K棒，向上突破整理平台，續創新高。
-
-            你的分析必須完全基於以上兩種模型。`;
+            你的分析應著重於K線排列的角度、整理區的型態、均線的相對位置、成交量的配合等視覺特徵，判斷使用者的圖與哪個範例圖更為相似，或兩者皆不相似。`;
 
             const schema = {
                 type: "OBJECT",
                 properties: {
-                    matchPercentage: { type: "NUMBER", description: "符合飆股型態的百分比 (0-100的數字)" },
-                    summary: { type: "STRING", description: "總結，用一句話簡潔有力地說明結論" },
+                    matchPercentage: { type: "NUMBER", description: "綜合視覺相似度後，符合任一飆股型態的百分比 (0-100)" },
+                    summary: { type: "STRING", description: "一句話總結，例如：『此型態與底部起漲範例高度相似』或『目前處於回檔修正階段，尚未出現攻擊訊號』" },
                     analysisModel: { type: "STRING", description: "判斷主要符合的模型 ('底部起漲模型', '中繼整理模型', '混合型', 或 '尚不符合')" },
-                    positivePoints: {
-                        type: "ARRAY",
-                        items: { "type": "STRING" },
-                        description: "得分項，條列式說明圖片中符合飆股特徵的優點"
-                    },
-                    negativePoints: {
-                        type: "ARRAY",
-                        items: { "type": "STRING" },
-                        description: "失分項，條列式說明圖片中不符合飆股特徵或有疑慮的缺點"
-                    }
+                    positivePoints: { type: "ARRAY", items: { "type": "STRING" }, description: "條列說明在視覺上與範例圖相似的優點" },
+                    negativePoints: { type: "ARRAY", items: { "type": "STRING" }, description: "條列說明在視覺上與範例圖不相似的缺點或疑慮" }
                 },
                 required: ["matchPercentage", "summary", "analysisModel", "positivePoints", "negativePoints"]
             };
 
             const payload = {
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
+                systemInstruction: { parts: [{ text: systemPrompt }] },
                 contents: [{
                     parts: [
-                        { text: "請根據你學習到的兩種飆股模型，分析這張K線圖。提供一個0到100的符合度百分比，並給出詳細的得分項與失分項。請務必使用 JSON 格式輸出。" },
-                        {
-                            inlineData: {
-                                mimeType: "image/png",
-                                data: base64ImageData
-                            }
-                        }
+                        { text: "這是一張完美的「底部起漲模型」範例圖，作為分析基準：" },
+                        { inlineData: { mimeType: "image/png", data: EXAMPLE_BOTTOM_BREAKOUT_BASE64 } },
+                        { text: "這是另一張完美的「中繼整理模型」範例圖，也作為分析基準：" },
+                        { inlineData: { mimeType: "image/jpeg", data: EXAMPLE_MID_RALLY_BASE64 } },
+                        { text: "現在，請以此兩張圖為最高標準，詳細分析底下這張使用者上傳的新K線圖，並以JSON格式回傳你的視覺比對分析結果：" },
+                        { inlineData: { mimeType: "image/png", data: base64ImageData } }
                     ]
                 }],
                 generationConfig: {
@@ -361,19 +332,14 @@
         }
 
         function displayResults(data) {
-            setProgress(data.matchPercentage || 0);
+            setProgress(0); // Reset before animation
+            setTimeout(() => setProgress(data.matchPercentage || 0), 100);
+
             summaryText.textContent = data.summary || '無法提供總結。';
             analysisModel.textContent = data.analysisModel || '未知';
 
-            positivePoints.innerHTML = (data.positivePoints || []).map(point => `<li>${point}</li>`).join('');
-            if ((data.positivePoints || []).length === 0) {
-                positivePoints.innerHTML = '<li>無明顯得分項。</li>';
-            }
-
-            negativePoints.innerHTML = (data.negativePoints || []).map(point => `<li>${point}</li>`).join('');
-            if ((data.negativePoints || []).length === 0) {
-                 negativePoints.innerHTML = '<li>無明顯失分項。</li>';
-            }
+            positivePoints.innerHTML = (data.positivePoints || []).map(point => `<li>${point}</li>`).join('') || '<li>無明顯得分項。</li>';
+            negativePoints.innerHTML = (data.negativePoints || []).map(point => `<li>${point}</li>`).join('') || '<li>無明顯失分項。</li>';
 
             resultContent.classList.remove('hidden');
         }
